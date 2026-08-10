@@ -56,6 +56,18 @@ const ProductModel = {
       }
     }
 
+    if (opts.include?.some(i => i.as === 'size_guide')) {
+      const guideIds = [...new Set(items.map(p => p.size_guide_id).filter(Boolean))];
+      let guides = [];
+      if (guideIds.length) {
+        const { data } = await supabase.from('size_guides').select('*').in('id', guideIds);
+        guides = data || [];
+      }
+      const guideMap = {};
+      guides.forEach(g => (guideMap[g.id] = g));
+      items = items.map(p => ({ ...p, size_guide: guideMap[p.size_guide_id] || null }));
+    }
+
     if (opts.order) {
       const [field, dir] = opts.order[0];
       items = [...items].sort((a, b) => {

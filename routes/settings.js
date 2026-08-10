@@ -12,6 +12,7 @@ router.put(
   requireAdmin,
   upload.fields([
     { name: 'app_logo_file', maxCount: 1 },
+    { name: 'app_favicon_file', maxCount: 1 },
     { name: 'hero_bg_file', maxCount: 1 },
   ]),
   ctrl.updateSettings

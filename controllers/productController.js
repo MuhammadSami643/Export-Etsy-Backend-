@@ -10,6 +10,7 @@ const generateSku = (name) =>
 const productInclude = [
   { model: 'Category', as: 'category' },
   { model: 'ProductImage', as: 'images' },
+  { model: 'SizeGuide', as: 'size_guide' }
 ];
 
 exports.list = async (req, res) => {
@@ -60,6 +61,7 @@ exports.create = async (req, res) => {
   if (!body.name) throw createError(400, 'Product name is required');
   body.slug = slugify(body.slug || body.name);
   body.sku = body.sku || generateSku(body.name);
+  if (body.size_guide_id === '') body.size_guide_id = null;
   ['sizes', 'colors'].forEach((k) => {
     if (typeof body[k] === 'string') {
       body[k] = body[k].split(',').map((v) => v.trim()).filter(Boolean);
@@ -124,6 +126,7 @@ exports.update = async (req, res) => {
   if (body.slug) body.slug = slugify(body.slug);
   if (body.name && !body.sku) body.sku = generateSku(body.name);
   if (body.sku) body.sku = body.sku.toUpperCase().replace(/\s+/g, '-');
+  if (body.size_guide_id === '') body.size_guide_id = null;
   ['sizes', 'colors'].forEach((k) => {
     if (typeof body[k] === 'string') {
       body[k] = body[k].split(',').map((v) => v.trim()).filter(Boolean);
@@ -131,6 +134,8 @@ exports.update = async (req, res) => {
   });
 
   const updated = await store.products.update(product.id, body);
+  console.log('Update payload:', body);
+  console.log('Updated product:', updated);
 
   if (req.files && req.files.length) {
     const existingImages = await store.product_images.findByProductId(product.id);

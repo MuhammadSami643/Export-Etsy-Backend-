@@ -13,5 +13,6 @@ router.get('/customers/:id', customersController.getOne);
 router.delete('/customers/:id', customersController.remove);
 
 router.use('/size-guides', require('./sizeGuides'));
+router.use('/testimonials', require('./testimonials'));
 
 module.exports = router;

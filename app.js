@@ -20,7 +20,7 @@ const app = express();
 // real client address (needed for geo-IP analytics), not the proxy's.
 app.set('trust proxy', true);
 
-app.use(cors({ origin: [process.env.CLIENT_URL || 'http://localhost:5173', 'http://localhost:5174'] }));
+app.use(cors({ origin: [process.env.CLIENT_URL || 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'] }));
 app.use(logger('dev'));
 
 app.use(express.json());
@@ -42,6 +42,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/size-guides', require('./routes/sizeGuides'));
+app.use('/api/testimonials', require('./routes/testimonials'));
 app.use((req, res, next) => next(createError(404, 'Route not found')));
 app.use(errorHandler);
 

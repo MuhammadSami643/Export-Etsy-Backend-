@@ -9,6 +9,7 @@ const HeroContentModel = require('./heroContentModel');
 const ContactMessageModel = require('./contactMessageModel');
 const PageViewModel = require('./pageViewModel');
 const SizeGuideModel = require('./sizeGuideModel');
+const TestimonialModel = require('./testimonialModel');
 
 module.exports = {
   users: UserModel,
@@ -22,4 +23,5 @@ module.exports = {
   contact_messages: ContactMessageModel,
   page_views: PageViewModel,
   size_guides: SizeGuideModel,
+  testimonials: TestimonialModel,
 };

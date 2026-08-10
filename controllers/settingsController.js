@@ -14,6 +14,7 @@ exports.getPublicSettings = async (req, res) => {
   res.json({
     company_name: s.company_name || '',
     app_logo: s.app_logo || '',
+    app_favicon: s.app_favicon || '',
     tagline: s.tagline || '',
     phone: s.phone || '',
     whatsapp: s.whatsapp || '',
@@ -50,6 +51,9 @@ exports.updateSettings = async (req, res) => {
   if (req.files) {
     if (req.files.app_logo_file && req.files.app_logo_file[0]) {
       data.app_logo = `/uploads/${req.files.app_logo_file[0].filename}`;
+    }
+    if (req.files.app_favicon_file && req.files.app_favicon_file[0]) {
+      data.app_favicon = `/uploads/${req.files.app_favicon_file[0].filename}`;
     }
     if (req.files.hero_bg_file && req.files.hero_bg_file[0]) {
       data.hero_bg = `/uploads/${req.files.hero_bg_file[0].filename}`;
