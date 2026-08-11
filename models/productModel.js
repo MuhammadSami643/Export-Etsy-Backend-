@@ -7,6 +7,7 @@ const ProductModel = {
 
     if (where.active !== undefined) query = query.eq('active', where.active);
     if (where.featured !== undefined) query = query.eq('featured', where.featured);
+    if (where.show_in_hero !== undefined) query = query.eq('show_in_hero', where.show_in_hero);
     if (where.category_id) query = query.eq('category_id', where.category_id);
     if (where.id) query = query.eq('id', where.id);
     if (where.slug) query = query.eq('slug', where.slug);

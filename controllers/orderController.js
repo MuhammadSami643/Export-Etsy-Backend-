@@ -1,5 +1,6 @@
 const createError = require('http-errors');
 const { store } = require('../utils/data_store');
+const PromotionModel = require('../models/promotionModel');
 
 // Places an order directly in the database (no external payment gateway).
 // Payment happens out-of-band (COD / manual transfer / custom arrangement);
@@ -13,6 +14,15 @@ exports.checkout = async (req, res) => {
     throw createError(400, 'Customer name, email and address are required');
   }
 
+  // Fetch active promotions to calculate correct price
+  const activePromos = await PromotionModel.findAll({ where: { active: true } });
+  const now = new Date();
+  const validPromos = activePromos.filter(sale => {
+    if (sale.start_date && new Date(sale.start_date) > now) return false;
+    if (sale.end_date && new Date(sale.end_date) < now) return false;
+    return true;
+  });
+
   const detailed = [];
   for (const it of items) {
     const product = await store.products.findByPk(it.productId);
@@ -23,10 +33,30 @@ exports.checkout = async (req, res) => {
     if (product.stock < qty) {
       throw createError(400, `Not enough stock for "${product.name}"`);
     }
-    detailed.push({ product, qty, size: it.size || null, color: it.color || null });
+
+    // Calculate sale price
+    let lowestPrice = parseFloat(product.price);
+    validPromos.forEach(sale => {
+      let applies = false;
+      if (sale.applies_to === 'all') applies = true;
+      if (sale.applies_to === 'products' && sale.target_ids.includes(product.id)) applies = true;
+      if (sale.applies_to === 'categories' && sale.target_ids.includes(product.category_id)) applies = true;
+      if (applies) {
+        let salePrice = parseFloat(product.price);
+        if (sale.discount_type === 'percentage') {
+          salePrice -= salePrice * (sale.discount_value / 100);
+        } else {
+          salePrice -= sale.discount_value;
+        }
+        if (salePrice < 0) salePrice = 0;
+        if (salePrice < lowestPrice) lowestPrice = salePrice;
+      }
+    });
+
+    detailed.push({ product, qty, size: it.size || null, color: it.color || null, finalPrice: lowestPrice });
   }
 
-  const total = detailed.reduce((sum, d) => sum + parseFloat(d.product.price) * d.qty, 0);
+  const total = detailed.reduce((sum, d) => sum + d.finalPrice * d.qty, 0);
 
   const order = await store.orders.create({
     customer_name: customer.name,
@@ -49,7 +79,7 @@ exports.checkout = async (req, res) => {
       order_id: order.id,
       product_id: d.product.id,
       product_name: d.product.name,
-      price: d.product.price,
+      price: d.finalPrice,
       quantity: d.qty,
       size: d.size,
       color: d.color,

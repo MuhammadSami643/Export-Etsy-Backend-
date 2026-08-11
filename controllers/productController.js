@@ -14,10 +14,11 @@ const productInclude = [
 ];
 
 exports.list = async (req, res) => {
-  const { category, search, featured, page = 1, limit = 12, admin } = req.query;
+  const { category, search, featured, show_in_hero, page = 1, limit = 12, admin } = req.query;
   const where = {};
   if (!admin) where.active = true;
   if (featured === 'true') where.featured = true;
+  if (show_in_hero === 'true') where.show_in_hero = true;
   if (search) where.name = { ilike: `%${search}%` };
 
   const include = [...productInclude];

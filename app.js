@@ -43,6 +43,7 @@ app.use('/api/contact', require('./routes/contact'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/size-guides', require('./routes/sizeGuides'));
 app.use('/api/testimonials', require('./routes/testimonials'));
+app.use('/api/promotions', require('./routes/promotions'));
 app.use((req, res, next) => next(createError(404, 'Route not found')));
 app.use(errorHandler);
 

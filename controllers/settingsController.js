@@ -25,6 +25,13 @@ exports.getPublicSettings = async (req, res) => {
     instagram: s.instagram || '',
     linkedin: s.linkedin || '',
     youtube: s.youtube || '',
+    feature_1_title: s.feature_1_title || '',
+    feature_1_desc: s.feature_1_desc || '',
+    feature_2_title: s.feature_2_title || '',
+    feature_2_desc: s.feature_2_desc || '',
+    feature_3_title: s.feature_3_title || '',
+    feature_3_desc: s.feature_3_desc || '',
+    social_links: s.social_links || [],
   });
 };
 
